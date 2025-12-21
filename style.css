@@ -1,3 +1,7 @@
+body{
+    font-family: sans-serif;
+}
+
 #root {
     color: black;
     background-color: dimgray;
@@ -43,4 +47,10 @@
 .copyright {
     font-size: small;
     text-align: right;
+}
+
+.filterbox {
+    background-color: white;
+    padding: 10px;
+    text-align: center;
 }
