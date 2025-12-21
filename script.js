@@ -2,16 +2,17 @@
 
 // Begin with an empty state
 const state = {
-  episodes: [], // this is our list of episodes
-  search: null, // search term
+    shows: [], // this is out list of shows
+    episodes: [], // this is our list of episodes
+    search: null, // search term
 };
 
-//let filterText = "";
-//let filterId = "";
 let totalEpisodes = 0;
 let episodeCount = 0;
 let selector = null;
-const endpoint = "https://api.tvmaze.com/shows/82/episodes";
+// let endpoint = "https://api.tvmaze.com/shows/82/episodes";
+let endpoint = "";
+const showsEndpoint = "https://api.tvmaze.com/shows";
 
 function filterIn(episode, filterText) {
     console.log(`filter ${episode.summary}\n${episode.name}\n${filterText}`);
@@ -53,6 +54,17 @@ function doFiltering(text, id) {
 
 
 // Fetch stuff
+const fetchShows = async () => {
+    const response = await fetch(showsEndpoint);
+    if (response.ok) {
+	console.log(`response: ${response.status}`);
+	return await response.json();
+    } else {
+	console.log(`response: ${response.status}`);
+	return "{'error':'" + response.status + "'}";
+    }
+};
+
 const fetchEpisodes = async () => {
     const response = await fetch(endpoint);
     if (response.ok) {
@@ -85,6 +97,53 @@ function setup() {
 	}
 	doFiltering("", filterId);
     });
+    const showSel = document.getElementById("showSelector");
+    fetchShows().then((shows) => {
+	console.log(`got ${shows.length} shows`);
+	for (let index = 0; index < shows.length; index++) {
+	    const show = shows[index];
+	    const option = document.createElement("option");
+	    option.value = `https://api.tvmaze.com/shows/${show.id}/episodes`;
+	    option.innerText = show.name;
+	    showSel.appendChild(option);
+	}
+    });
+    showSel.addEventListener('change', ((event) => {
+	endpoint = event.target.value;
+	if (endpoint != "NONE") {
+	    removeEpisodes();
+	    clearEpisodeSelector();
+	    console.log(`getting from ${endpoint}`);
+	    getShowEpisodes(endpoint);
+	}
+    }));
+}
+
+function clearEpisodeSelector() {
+    const content = document.getElementById("episodeSelector");
+    //console.log(`got root as ${content} with ${content.firstChild}`);
+    while (content.lastChild.value != "all") {
+	content.removeChild(content.lastChild);
+    }
+    document.getElementById("filterInput").value = "";
+}
+
+function removeEpisodes() {
+    const content = document.getElementById("root");
+    //console.log(`got root as ${content} with ${content.firstChild}`);
+    while (content.firstChild) {
+	//console.log(`removing content ${content.firstChild}`);
+	const child = content.firstChild;
+	while (child.firstChild) {
+	    //console.log(`removing child ${content.firstChild}`);
+	    child.removeChild(child.lastChild);
+	}
+	content.removeChild(content.lastChild);
+    }
+}
+
+function getShowEpisodes(url) {
+    endpoint = url;
     // state.episodes = getAllEpisodes();
     fetchEpisodes().then((episodes) => {
 	if (!episodes.error) {
@@ -98,6 +157,7 @@ function setup() {
 	}
     });
 }
+
 // render is only called once
 // filtering will set div.style.display to none
 function render() {
