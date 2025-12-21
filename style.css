@@ -1,3 +1,46 @@
 #root {
-  color: red;
+    color: black;
+    background-color: dimgray;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    padding: 10px;
+    width = 95%;
+}
+
+.item {
+    padding: 8px;
+    margin: 4px;
+    background-color: white;
+    border-radius: 25px;
+}
+
+.item img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.item h2 {
+    border-radius: 25px;
+    padding: 0.5em;
+    text-align: center;
+    border: solid;
+    border-color: steelblue;
+}
+
+.season_ep {
+    text-align: center;
+    font-weight: bold;
+}
+
+.summary p {
+    text-align: left;
+}
+
+.copyright {
+    font-size: small;
+    text-align: right;
 }
