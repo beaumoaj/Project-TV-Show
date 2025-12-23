@@ -78,7 +78,6 @@ function fetchEpisodes (endpoint) {
     }
 };
 
-
 function setup() {
     selector = document.getElementById("episodeSelector");
     filterInput = document.getElementById('filterInput');
