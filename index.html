@@ -9,22 +9,22 @@
   </head>
 
   <body>
-    <div class="filterbox">
-      <p>
-	<b>Choose Show:</b>&nbsp;
-	<select id="showSelector">
-	  <option value="NONE">Choose a show</option>
-	</select>&nbsp;
-	<b>Go to Episode</b>&nbsp;
-	<select id="episodeSelector">
-	  <option value="all">All Episodes</option>
-	</select>&nbsp;
-	<b>Filter:</b>&nbsp;<input type="text" id="filterInput"/>&nbsp;
-	<span id="episodeCount">0</span> Episodes shown
-      </p>
+    <div id="episodesRoot">
+      <div class="filterbox">
+	<p>
+	  <button id="showsButton">Back to shows</button>&nbsp;
+	  <b>Go to Episode</b>&nbsp;
+	  <select id="episodeSelector">
+	    <option value="all">All Episodes</option>
+	  </select>&nbsp;
+	  <b>Filter:</b>&nbsp;<input type="text" id="filterInput"/>&nbsp;
+	  <span id="episodeCount">0</span> Episodes shown
+	</p>
+	<h1 id="showTitle"></h1>
+      </div>
+      <div id="root"></div>
     </div>
-    <div id="root">
-    </div>
+    <div id="showsRoot"></div>
 
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
     <!-- script src="episodes.js"></script -->

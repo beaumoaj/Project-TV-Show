@@ -3,9 +3,13 @@
 // Begin with an empty state
 const state = {
     shows: [], // this is our list of shows
-    episodes: [], // this is our list of episodes
-    showsEpisodes: new Map(),
+    // episodes: [], // this is our list of episodes
+    showsEpisodes: new Map(), // maps shows to episodes
     search: null, // search term
+    currentShow: null,
+    showsRoot: null,
+    episodesRoot: null,
+    currentShowTitle: null,
 };
 
 let totalEpisodes = 0;
@@ -36,7 +40,7 @@ const filterEpisodes = function (e) {
 function doFiltering(text, id) {
     episodeCount = 0;
     console.log(`filtering: text: ${text} id: ${id}`);
-    const episodes = state.showsEpisodes[id];
+    const episodes = state.showsEpisodes[state.currentShow];
     for (let index = 0; index < episodes.length; index++) {
 	// for (const episode in state.episodes) {
 	const episode = episodes[index];
@@ -80,6 +84,17 @@ const fetchEpisodes = async (endpoint) => {
 
 
 function setup() {
+    state.episodesRoot = document.getElementById("episodesRoot");
+    state.episodesContent = document.getElementById("root");
+    state.showsRoot = document.getElementById("showsRoot");
+    state.currentShowTitle = document.getElementById("showTitle");
+    episodesRoot.style.display = "none";
+    const showsButton = document.getElementById("showsButton");
+    showsButton.addEventListener("click", (() => {
+	state.episodesRoot.style.display = "none";
+	state.showsRoot.style.display = "block";
+    }));
+    
     selector = document.getElementById("episodeSelector");
     filterInput = document.getElementById('filterInput');
     filterInput.addEventListener('input', filterEpisodes);
@@ -99,12 +114,18 @@ function setup() {
 	}
 	doFiltering("", filterId);
     }));
+    fetchShows().then((shows) => {
+	state.shows = shows;
+	renderShows();
+    });
+    /*
     const showSel = document.getElementById("showSelector");
     fetchShows().then((shows) => {
 	state.shows = shows;
 	console.log(`got ${state.shows.length} shows`);
 	for (let index = 0; index < shows.length; index++) {
 	    const show = state.shows[index];
+	    console.log(show);
 	    const option = document.createElement("option");
 	    option.value = show.id; // `https://api.tvmaze.com/shows/${show.id}/episodes`;
 	    option.innerText = show.name;
@@ -119,7 +140,8 @@ function setup() {
 	    console.log(`getting from ${showId}`);
 	    getShowEpisodes(showId);
 	}
-    }));
+	}));
+    */
 }
 
 function clearEpisodeSelector() {
@@ -132,7 +154,7 @@ function clearEpisodeSelector() {
 }
 
 function removeEpisodes() {
-    const content = document.getElementById("root");
+    const content = state.episodesContent;
     //console.log(`got root as ${content} with ${content.firstChild}`);
     while (content.firstChild) {
 	//console.log(`removing content ${content.firstChild}`);
@@ -147,21 +169,52 @@ function removeEpisodes() {
 
 function getShowEpisodes(showId) {
     // endpoint = url;
-    const endpoint = `https://api.tvmaze.com/shows/${showId}/episodes`;
-    // state.episodes = getAllEpisodes();
-    fetchEpisodes(endpoint).then((episodes) => {
-	state.showsEpisodes[showId] = episodes;
-	
-	if (!episodes.error) {
-	    console.log(`got ${episodes.length} episodes`);
-	    state.episodes = episodes;
-	    console.log(`setup: now render ${state.episodes.length} episodes`);
-	    render(state.showsEpisodes[showId]);
-	} else {
-	    console.log(episodes.error);
-	    window.alert(episodes.error);
-	}
-    });
+    state.showsRoot.style.display = "none";
+    state.episodesRoot.style.display = "block";
+    if (showId === state.currentShow) {
+	render(state.showsEpisodes[showId]);
+    } else {
+	const endpoint = `https://api.tvmaze.com/shows/${showId}/episodes`;
+	// state.episodes = getAllEpisodes();
+	fetchEpisodes(endpoint).then((episodes) => {
+	    state.showsEpisodes[showId] = episodes;
+	    state.currentShow = showId;
+	    if (!episodes.error) {
+		console.log(`got ${episodes.length} episodes`);
+		state.episodes = episodes;
+		console.log(`setup: now render ${state.episodes.length} episodes`);
+		render(state.showsEpisodes[showId]);
+	    } else {
+		console.log(episodes.error);
+		window.alert(episodes.error);
+	    }
+	});
+    }
+}
+
+// render is only called once
+// filtering will set div.style.display to none
+function renderShows() {
+    // console.log(state.episodes[0]);
+    const content = state.showsRoot;
+    const episodes = state.episodesRoot;
+    content.style.display = "block";
+    episodes.style.display = "none";
+    const div = document.createElement("div");
+    div.className = "container";
+    div.id = "allShows";
+    for (let index = 0; index < state.shows.length; index++) {
+	const show = state.shows[index];
+	const cell = displayShow(show);
+	div.appendChild(cell);
+	// link the episode object to its display div
+	show.div = cell;
+    }
+    content.appendChild(div);
+    const copyright = document.createElement("div");
+    copyright.className = "copyright";
+    copyright.innerHTML = '<p>Data from <a href="https://tvmaze.com/">https://tvmaze.com/</a></p>';
+    content.appendChild(copyright);
 }
 
 // render is only called once
@@ -170,7 +223,10 @@ function render(episodes) {
     totalEpisodes = 0;
     episodeCount = 0;
     // console.log(state.episodes[0]);
-    const content = document.getElementById("root");
+    const content = state.episodesContent;
+    const shows = state.showsRoot;
+    content.style.display = "block";
+    shows.style.display = "none";
     const div = document.createElement("div");
     div.className = "container";
     div.id = "allEpisodes";
@@ -196,6 +252,41 @@ function updateCount() {
     const count = document.getElementById("episodeCount");
     count.innerText = `${episodeCount}/${totalEpisodes}`;
 }
+
+// build the display for one show
+function displayShow(show) {
+    const cell = document.createElement("div");
+    cell.className = "item";
+    cell.id = show.id;
+    // create the display elements
+    const nameHeader = document.createElement("h2");
+    nameHeader.addEventListener("click", (() => {
+	// display the episodes for this show
+	state.currentShowTitle.innerText = show.name;
+	removeEpisodes();
+	clearEpisodeSelector();
+	console.log(`getting from ${show.id}`);
+	getShowEpisodes(show.id);
+    })); 
+    const picImg = document.createElement("img");
+    // const seasonEp = document.createElement("p");
+    const summary = document.createElement("div");
+    summary.className = "summary";
+    // seasonEp.className = "season_ep";
+    nameHeader.innerText = show.name;
+    summary.innerHTML = show.summary;
+    if (show.image != undefined) {
+	picImg.src = show.image.medium;
+    } else {
+	picImg.src = "https://placehold.co/100x100"
+    }
+    cell.appendChild(nameHeader);
+    cell.appendChild(picImg);
+    // cell.appendChild(seasonEp);
+    cell.appendChild(summary);
+    return cell;
+}
+
 
 // build the display for one episode
 function displayEpisode(episode) {
