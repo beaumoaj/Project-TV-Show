@@ -4,7 +4,7 @@
 const state = {
     shows: [], // this is our list of shows
     episodes: [], // this is our list of episodes
-    showsEpisodes = {'NONE': 'NONE'},
+    showsEpisodes: new Map(),
     search: null, // search term
 };
 
@@ -67,7 +67,7 @@ const fetchShows = async () => {
     }
 };
 
-function fetchEpisodes (endpoint) {
+const fetchEpisodes = async (endpoint) => {
     const response = await fetch(endpoint);
     if (response.ok) {
 	console.log(`response: ${response.status}`);
