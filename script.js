@@ -32,8 +32,6 @@ function filterIn(episode, filterText) {
 
 const filterEpisodes = function (e) {
     selector.value = "all";
-    // filterText = e.target.value;
-    // console.log(`filter text is ${filterText} now.`);
     doFiltering(e.target.value, "");
 };
 
@@ -63,10 +61,10 @@ function doFiltering(text, id) {
 const fetchShows = async () => {
     const response = await fetch(showsEndpoint);
     if (response.ok) {
-	console.log(`response: ${response.status}`);
+	//console.log(`response: ${response.status}`);
 	return await response.json();
     } else {
-	console.log(`response: ${response.status}`);
+	//console.log(`response: ${response.status}`);
 	return "{'error':'" + response.status + "'}";
     }
 };
@@ -74,10 +72,10 @@ const fetchShows = async () => {
 const fetchEpisodes = async (endpoint) => {
     const response = await fetch(endpoint);
     if (response.ok) {
-	console.log(`response: ${response.status}`);
+	//console.log(`response: ${response.status}`);
 	return await response.json();
     } else {
-	console.log(`response: ${response.status}`);
+	//console.log(`response: ${response.status}`);
 	return "{'error':'" + response.status + "'}";
     }
 };
@@ -118,30 +116,6 @@ function setup() {
 	state.shows = shows;
 	renderShows();
     });
-    /*
-    const showSel = document.getElementById("showSelector");
-    fetchShows().then((shows) => {
-	state.shows = shows;
-	console.log(`got ${state.shows.length} shows`);
-	for (let index = 0; index < shows.length; index++) {
-	    const show = state.shows[index];
-	    console.log(show);
-	    const option = document.createElement("option");
-	    option.value = show.id; // `https://api.tvmaze.com/shows/${show.id}/episodes`;
-	    option.innerText = show.name;
-	    showSel.appendChild(option);
-	}
-    });
-    showSel.addEventListener('change', ((event) => {
-	const showId = event.target.value;
-	if (showId != "NONE") {
-	    removeEpisodes();
-	    clearEpisodeSelector();
-	    console.log(`getting from ${showId}`);
-	    getShowEpisodes(showId);
-	}
-	}));
-    */
 }
 
 function clearEpisodeSelector() {
@@ -192,8 +166,9 @@ function getShowEpisodes(showId) {
     }
 }
 
-// render is only called once
-// filtering will set div.style.display to none
+// renderShows is only called once
+// when a show is selected, the shows div is hidden and the episodes
+// are displayed
 function renderShows() {
     // console.log(state.episodes[0]);
     const content = state.showsRoot;
@@ -271,19 +246,40 @@ function displayShow(show) {
     const picImg = document.createElement("img");
     // const seasonEp = document.createElement("p");
     const summary = document.createElement("div");
+    const genreBox = document.createElement("div");
+    genreBox.className = "genreBox";
+    const genres = document.createElement("div");
+    const genresHeading = document.createElement("p");
+    genresHeading.className = "genresHeading";
+    genresHeading.innerHTML = "<b>Genres...</b>";
+    const ratingDiv = document.createElement("div");
+    genres.className = "genreList";
     summary.className = "summary";
     // seasonEp.className = "season_ep";
     nameHeader.innerText = show.name;
     summary.innerHTML = show.summary;
+    ratingDiv.className = "rating";
+    ratingDiv.innerHTML = `<p><b>Rating</b>: ${show.rating.average}, <b>Status</b>: ${show.status}, <b>Runtime</b>: ${show.runtime}</p>`;
     if (show.image != undefined) {
 	picImg.src = show.image.medium;
     } else {
 	picImg.src = "https://placehold.co/100x100"
     }
+    for (let genreIndex = 0; genreIndex < show.genres.length; genreIndex++) {
+	const genre = show.genres[genreIndex];
+	const genreDiv = document.createElement("div");
+	genreDiv.className = "genre";
+	genreDiv.innerHTML = `<genre>${genre}</genre>`;
+	genres.appendChild(genreDiv);
+    }
+    genreBox.appendChild(genresHeading);
+    genreBox.appendChild(genres);
     cell.appendChild(nameHeader);
     cell.appendChild(picImg);
     // cell.appendChild(seasonEp);
     cell.appendChild(summary);
+    cell.appendChild(genreBox);
+    cell.appendChild(ratingDiv);
     return cell;
 }
 

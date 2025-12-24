@@ -14,11 +14,38 @@ body{
     background-color: dimgray;
 }
 
+.genreList {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+}
+
 .item {
     padding: 8px;
     margin: 4px;
     background-color: white;
     border-radius: 25px;
+}
+
+.genre{
+    padding: 2px;
+    margin: 2px;
+    border-radius: 25px;
+    background-color: lightcyan;
+    color: blue;
+    border-bottom: solid;
+    border-width: 2px;
+    border-color: steelblue;
+}
+
+.genreBox {
+    border: solid;
+    border-width: 2px;
+    border-color: steelblue;
+}
+.genresHeading {
+    text-align: left;
+    padding:2px;
+    margin: 2px;
 }
 
 .item img {
