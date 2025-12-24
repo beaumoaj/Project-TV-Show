@@ -278,8 +278,8 @@ function displayShow(show) {
     cell.appendChild(picImg);
     // cell.appendChild(seasonEp);
     cell.appendChild(summary);
-    cell.appendChild(genreBox);
     cell.appendChild(ratingDiv);
+    cell.appendChild(genreBox);
     return cell;
 }
 
