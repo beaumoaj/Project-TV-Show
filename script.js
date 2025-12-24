@@ -253,6 +253,8 @@ function displayShow(show) {
     genresHeading.className = "genresHeading";
     genresHeading.innerHTML = "<b>Genres...</b>";
     const ratingDiv = document.createElement("div");
+    const ratingGenreDiv = document.createElement("div");
+    ratingGenreDiv.className = "ratingGenreBox";
     genres.className = "genreList";
     summary.className = "summary";
     // seasonEp.className = "season_ep";
@@ -274,12 +276,13 @@ function displayShow(show) {
     }
     genreBox.appendChild(genresHeading);
     genreBox.appendChild(genres);
+    ratingGenreDiv.appendChild(genreBox);
+    ratingGenreDiv.appendChild(ratingDiv);
     cell.appendChild(nameHeader);
     cell.appendChild(picImg);
     // cell.appendChild(seasonEp);
     cell.appendChild(summary);
-    cell.appendChild(ratingDiv);
-    cell.appendChild(genreBox);
+    cell.appendChild(ratingGenreDiv);
     return cell;
 }
 

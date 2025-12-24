@@ -37,11 +37,17 @@ body{
     border-color: steelblue;
 }
 
-.genreBox {
+.ratingGenreBox {
     border: solid;
     border-width: 2px;
     border-color: steelblue;
 }
+
+.rating {
+}
+.genreBox {
+}
+
 .genresHeading {
     text-align: left;
     padding:2px;
